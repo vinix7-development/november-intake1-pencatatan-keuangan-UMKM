@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keuangan Pribadi</title>
+<style>:root{--accent:#2563eb;--bg:#f5f7fe}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:15px/1.5 system-ui,"Segoe UI",sans-serif;background:var(--bg);color:#1d2230}
+main{padding:24px;width:100%;min-width:0}
+h2{font-size:22px;margin-bottom:16px}h3{font-size:16px;margin-bottom:10px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:14px}
+.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:#fff;border:1px solid #e3e6ee;border-radius:12px;padding:16px;margin-bottom:14px;min-width:0}
+.grid>.card{margin:0}
+.k{color:#667085;font-size:13px}.v{font-size:24px;font-weight:700}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #edf0f5;white-space:nowrap}th{color:#667085;font-weight:600}
+form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));align-items:end}
+label{display:grid;gap:4px;font-size:13px;color:#475467}
+input,select{font:inherit;padding:8px 10px;border:1px solid #cfd4df;border-radius:8px;background:#fff;width:100%}
+.btn{font:inherit;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:600}
+.btn.alt{background:#eef0f5;color:#1d2230}.btn.sm{padding:4px 10px;font-size:13px}
+.tag{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12px;font-weight:600}
+.g{background:#dcfae6;color:#085d3a}.y{background:#fef0c7;color:#7a4504}.r{background:#fee4e2;color:#912018}.n{background:#eef0f5;color:#344054}
+.bar{height:10px;background:#eef0f5;border-radius:99px;overflow:hidden;margin:4px 0 10px}.bar i{display:block;height:100%;background:var(--accent)}
+.bar i.y{background:#f79009}.bar i.r{background:#d92d20}
+.row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#toast{position:fixed;right:16px;bottom:16px;background:#1d2230;color:#fff;padding:10px 16px;border-radius:8px;display:none;max-width:90vw}
+.note{font-size:12px;color:#667085;margin-top:18px}
+.donut-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.donut{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;flex:none}
+.donut>div{width:116px;height:116px;border-radius:50%;background:var(--card,#fff);display:grid;place-items:center;text-align:center;font-weight:700;font-size:14px}
+.legend{list-style:none;flex:1;min-width:180px}.legend li{display:flex;gap:8px;align-items:center;padding:4px 0}.legend i{width:10px;height:10px;border-radius:3px}.legend b{margin-left:auto}
+.cols{display:flex;gap:18px;align-items:flex-end;height:240px;padding-top:10px}.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;font-size:12px;color:#667085}
+.col>div{display:flex;gap:4px;align-items:flex-end;flex:1;width:100%;justify-content:center}.col i{width:32%;max-width:34px;border-radius:5px 5px 0 0;background:var(--accent)}.col i.y{background:#f79009}
+.split{display:grid;gap:16px;grid-template-columns:minmax(0,2fr) minmax(0,1fr);margin-bottom:16px}.split>.card{margin:0}
+@media(max-width:900px){.split{grid-template-columns:minmax(0,1fr)}}
+[hidden]{display:none!important}
+
+/* aplikasi keuangan: navigasi atas, kartu saldo besar, lembut */
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 4vw;background:#fff;border-bottom:1px solid #e6eaf5}
+header h1{font-size:18px;color:#1d4ed8}
+#nav{display:flex;gap:6px;overflow-x:auto;background:#eef2fc;padding:5px;border-radius:99px;max-width:100%}
+#nav button{border:0;background:none;font:inherit;padding:8px 16px;border-radius:99px;cursor:pointer;white-space:nowrap;color:#475467}
+#nav button.on{background:#1d4ed8;color:#fff}
+main{padding:28px 4vw}.card{border:0;border-radius:22px;box-shadow:0 6px 24px #1d4ed812;padding:22px}
+.btn,input,select{border-radius:99px!important}
+.hero{background:linear-gradient(120deg,#1d4ed8,#4f46e5);color:#fff;border-radius:28px;padding:30px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.hero .big{font-size:42px;font-weight:800}
+.pill{background:#ffffff1f;border-radius:18px;padding:14px 22px}
+.wallets{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}.wallets .card{margin:0;border-top:5px solid var(--accent)}
+.feed{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eef0f5}.in{color:#067647;font-weight:700}.out{color:#b42318;font-weight:700}
+svg.area{width:100%;height:230px}
+</style></head><body><header><h1>Keuangan Pribadi</h1><div id="nav"></div></header><main></main><div id="toast" role="status"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rp=n=>(n<0?'-':'')+'Rp'+Math.abs(Math.round(n)).toLocaleString('id-ID');
+const sum=(a,f)=>a.reduce((t,x)=>t+f(x),0);
+const opt=a=>a.map(x=>`<option>${esc(x)}</option>`).join('');
+const table=(h,r)=>`<div class="scroll"><table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${r.length?r.map(c=>`<tr>${c.map(x=>`<td>${x}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${h.length}" class="k">Belum ada data.</td></tr>`}</table></div>`;
+const stat=(k,v,s='')=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div><div class="k">${s}</div></div>`;
+const bar=(label,right,pct,c='')=>`<div class="row"><span>${label}</span><span class="k">${right}</span></div><div class="bar"><i class="${c}" style="width:${Math.min(100,pct)}%"></i></div>`;
+let page,timer;
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(timer);timer=setTimeout(()=>t.style.display='none',2800)}
+function go(p){page=p;render()}
+function render(){
+  $('#nav').innerHTML=Object.keys(PAGES).map(p=>`<button class="${p===page?'on':''}" onclick="go('${p}')">${ICONS[p]?`<span class="ic" aria-hidden="true">${ICONS[p]}</span>`:''}<span>${p}</span></button>`).join('');
+  $('main').dataset.page=page;
+  $('main').innerHTML=`<h2>${page}</h2>`+PAGES[page]()+`<p class="note">Prototipe tampilan. Data dummy, tersimpan hanya selama halaman terbuka.${typeof NOTE==='string'?' '+NOTE:''}</p>`;
+}
+function donut(entries,colors,center){const t=sum(entries,e=>e[1])||1;let a=0;const seg=entries.map((e,i)=>{const s=a;a+=e[1]/t*100;return `${colors[i%colors.length]} ${s}% ${a}%`}).join(',');
+  return `<div class="donut-wrap"><div class="donut" style="background:conic-gradient(${seg})"><div>${center}</div></div><ul class="legend">${entries.map((e,i)=>`<li><i style="background:${colors[i%colors.length]}"></i>${esc(e[0])}<b>${rp(e[1])}</b></li>`).join('')}</ul></div>`}
+function readForm(e){e.preventDefault();return Object.fromEntries(new FormData(e.target))}
+function csv(name,rows){const q=v=>{v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}));a.download=name;a.click()}
+
+const TITLE='Keuangan Pribadi';
+const wallets={'Tunai':200000,'Rekening':3000000,'E-wallet':150000};
+const tx=[{d:'2026-11-01',k:'Pemasukan',w:'Rekening',c:'Gaji',v:4500000},{d:'2026-11-08',k:'Pengeluaran',w:'Rekening',c:'Tagihan',v:600000},{d:'2026-11-15',k:'Pengeluaran',w:'E-wallet',c:'Transportasi',v:120000},{d:'2026-11-22',k:'Pengeluaran',w:'Tunai',c:'Makan',v:150000},{d:'2026-11-24',k:'Pengeluaran',w:'Rekening',c:'Makan',v:700000}];
+const budgets={'Makan':1000000,'Transportasi':400000,'Tagihan':600000};
+const goals=[{n:'Laptop baru',t:8000000,s:2500000,d:'2027-06-30'},{n:'Dana darurat',t:5000000,s:1000000,d:'2027-12-31'}];
+const cats=['Makan','Transportasi','Tagihan','Hiburan','Gaji','Lainnya'];
+const bal=w=>wallets[w]+sum(tx,t=>t.k==='Transfer'?(t.to===w?t.v:0)-(t.w===w?t.v:0):t.w===w?(t.k==='Pemasukan'?t.v:-t.v):0);
+const spent=c=>sum(tx.filter(t=>t.k==='Pengeluaran'&&t.c===c&&t.d.startsWith('2026-11')),t=>t.v);
+const total=k=>sum(tx.filter(t=>t.k===k&&t.d.startsWith('2026-11')),t=>t.v);
+function addTx(e){const f=readForm(e);if(f.k==='Transfer'&&f.w===f.to)return toast('Dompet asal dan tujuan harus berbeda.');
+  tx.push({d:f.d,k:f.k,w:f.w,to:f.to,c:f.k==='Transfer'?'ke '+f.to:f.c,v:+f.v});render();toast('Tersimpan')}
+function kindChange(s){const t=s.value==='Transfer';$('#to').hidden=!t;$('#cat').hidden=t}
+function budgetList(){return Object.entries(budgets).map(([c,l])=>{const p=spent(c)/l*100;return bar(`${esc(c)} <span class="tag ${p>=100?'r':p>=80?'y':'g'}">${Math.round(p)}%</span>`,`${rp(spent(c))} dari ${rp(l)}`,p,p>=100?'r':p>=80?'y':'')}).join('')}
+const PAGES={
+'Dasbor':()=>{const out=total('Pengeluaran');const by={};tx.filter(t=>t.k==='Pengeluaran'&&t.d.startsWith('2026-11')).forEach(t=>by[t.c]=(by[t.c]||0)+t.v);
+ const trend=[['Jun',2100000],['Jul',2450000],['Agu',1980000],['Sep',2300000],['Okt',2700000],['Nov',out]],mx=Math.max(...trend.map(t=>t[1]));
+ return `<div class="grid">${stat('Total saldo',rp(sum(Object.keys(wallets),bal)))}${stat('Pemasukan November',rp(total('Pemasukan')))}${stat('Pengeluaran November',rp(out))}</div>
+ <div class="grid two"><div class="card"><h3>Per kategori</h3>${Object.entries(by).map(([k,v])=>bar(esc(k),rp(v),v/out*100)).join('')}</div><div class="card"><h3>Tren 6 bulan</h3>${trend.map(([m,v])=>bar(m,rp(v),v/mx*100)).join('')}</div></div>
+ <div class="card"><h3>Anggaran</h3>${budgetList()}</div>`},
+'Transaksi':()=>`<div class="card"><form onsubmit="addTx(event)"><label>Jenis<select name="k" onchange="kindChange(this)"><option>Pengeluaran</option><option>Pemasukan</option><option>Transfer</option></select></label><label>Nominal<input name="v" type="number" min="1" required></label><label>Dompet<select name="w">${opt(Object.keys(wallets))}</select></label><label id="to" hidden>Ke dompet<select name="to">${opt(Object.keys(wallets))}</select></label><label id="cat">Kategori<select name="c">${opt(cats)}</select></label><label>Tanggal<input type="date" name="d" value="2026-11-26" required></label><button class="btn">Simpan</button></form></div>
+<div class="card"><div class="row"><h3>Riwayat</h3><button class="btn alt sm" onclick="csv('transaksi.csv',[['tanggal','jenis','dompet','kategori','nominal'],...tx.map(t=>[t.d,t.k,t.w,t.c,t.v])])">Ekspor CSV</button></div>${table(['Tanggal','Jenis','Dompet','Kategori','Nominal'],[...tx].reverse().map(t=>[t.d,t.k,esc(t.w),esc(t.c),rp(t.v)]))}</div>`,
+'Dompet':()=>`<div class="grid">${Object.keys(wallets).map(w=>stat(esc(w),rp(bal(w)))).join('')}</div><div class="card"><h3>Tambah dompet</h3><form onsubmit="const f=readForm(event);if(f.n in wallets)return toast('Dompet sudah ada.');wallets[f.n]=+f.s;render()"><label>Nama<input name="n" required></label><label>Saldo awal<input name="s" type="number" min="0" required></label><button class="btn">Tambah</button></form></div>`,
+'Anggaran':()=>`<div class="card">${budgetList()}<p class="k">Kuning mulai 80%, merah mulai 100%.</p></div><div class="card"><form onsubmit="const f=readForm(event);budgets[f.c]=+f.l;render()"><label>Kategori<select name="c">${opt(cats.filter(c=>c!=='Gaji'))}</select></label><label>Batas bulanan<input name="l" type="number" min="1" required></label><button class="btn">Atur</button></form></div>`,
+'Target tabungan':()=>`<div class="grid">${goals.map((g,i)=>`<div class="card"><h3>${esc(g.n)}</h3>${bar(rp(g.s),rp(g.t),g.s/g.t*100)}<p class="k">Tenggat ${g.d}</p><button class="btn sm" onclick="goals[${i}].s+=100000;render()">+ Rp100.000</button></div>`).join('')}</div><div class="card"><form onsubmit="const f=readForm(event);goals.push({n:f.n,t:+f.t,s:0,d:f.d});render()"><label>Nama target<input name="n" required></label><label>Nominal<input name="t" type="number" min="1" required></label><label>Tenggat<input name="d" type="date" required></label><button class="btn">Tambah</button></form></div>`
+};
+
+const ICONS={};
+PAGES['Dasbor']=()=>{const out=total('Pengeluaran'),by={};tx.filter(t=>t.k==='Pengeluaran'&&t.d.startsWith('2026-11')).forEach(t=>by[t.c]=(by[t.c]||0)+t.v);
+ const tr=[['Jun',2100000],['Jul',2450000],['Agu',1980000],['Sep',2300000],['Okt',2700000],['Nov',out]],mx=Math.max(...tr.map(t=>t[1]));
+ const pts=tr.map((t,i)=>`${20+i*112},${190-t[1]/mx*165}`).join(' ');
+ return `<div class="hero"><div><div>Total saldo</div><div class="big">${rp(sum(Object.keys(wallets),bal))}</div><button class="btn alt" onclick="go('Transaksi')">+ Catat transaksi</button></div><div class="row"><div class="pill">Masuk November<div class="v">${rp(total('Pemasukan'))}</div></div><div class="pill">Keluar November<div class="v">${rp(out)}</div></div></div></div>
+ <div class="wallets">${Object.keys(wallets).map(w=>`<div class="card"><div class="k">${esc(w)}</div><div class="v">${rp(bal(w))}</div></div>`).join('')}</div>
+ <div class="split"><div class="card"><h3>Tren pengeluaran 6 bulan</h3><svg class="area" viewBox="0 0 600 220" preserveAspectRatio="none" role="img" aria-label="Tren pengeluaran"><polygon points="20,195 ${pts} 580,195" fill="#2563eb22"/><polyline points="${pts}" fill="none" stroke="#2563eb" stroke-width="3" vector-effect="non-scaling-stroke"/></svg><div class="row k">${tr.map(t=>`<span>${t[0]}</span>`).join('')}</div></div>
+ <div class="card"><h3>Per kategori</h3>${donut(Object.entries(by),['#2563eb','#7c3aed','#06b6d4','#f59e0b'],rp(out))}</div></div>
+ <div class="split"><div class="card"><h3>Aktivitas terakhir</h3>${[...tx].reverse().slice(0,6).map(t=>`<div class="feed"><div>${esc(t.c)}<div class="k">${t.d} · ${esc(t.w)}</div></div><span class="${t.k==='Pemasukan'?'in':t.k==='Transfer'?'':'out'}">${t.k==='Pemasukan'?'+':t.k==='Transfer'?'':'-'}${rp(t.v)}</span></div>`).join('')}</div>
+ <div class="card"><h3>Anggaran</h3>${budgetList()}</div></div>`};
+
+go(Object.keys(PAGES)[0]);
+</script></body></html>
